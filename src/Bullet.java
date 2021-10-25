@@ -1,13 +1,8 @@
 
-public class Bullet {
-	int x;
-	int y;
-	int speed;
+public class Bullet extends Entity {
 	
 	Bullet(int x, int y, int speed) {
-		this.x = x;
-		this.y = y;
-		this.speed = speed;
+		super(x, y, speed);
 	}
 
 }
