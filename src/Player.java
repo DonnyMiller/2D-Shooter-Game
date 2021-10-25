@@ -8,6 +8,7 @@ public class Player extends Entity {
 		super(x, y, speed);
 		moveUp = false;
 		moveDown = false;
+		fire = false;
 	}
 
 }
