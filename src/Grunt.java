@@ -1,8 +1,17 @@
 
-public class Grunt extends Entity {
+public class Grunt extends Enemies {
+	static final int GRUNT_SPEED = 20;
 	
-	Grunt(int x, int y, int speed) {
-		super(x, y, speed); // will have negative speed so bullets move to the left
+	Grunt(int x, int y) {
+		super(x, y, GRUNT_SPEED); 
+		this.sizeX = 40;
+		this.sizeY = 40;
+		this.moveUp = false;
+		this.moveDown = false;
+		this.moveRight = false;
+		this.moveLeft = false;
+		this.hitBox = 22;
+
 	}
 
 }
