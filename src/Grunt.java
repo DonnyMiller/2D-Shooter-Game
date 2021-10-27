@@ -1,17 +1,54 @@
+import java.util.Random;
 
 public class Grunt extends Enemies {
-	static final int GRUNT_SPEED = 20;
-	
+	Random r;
+	static final int GRUNT_SPEED = 1;
+	static final int GRUNT_WIDTH = 20;
+	static final int GRUNT_HEIGHT = 20;
+
 	Grunt(int x, int y) {
-		super(x, y, GRUNT_SPEED); 
-		this.sizeX = 40;
-		this.sizeY = 40;
-		this.moveUp = false;
+		super(x, y, GRUNT_SPEED, GRUNT_WIDTH, GRUNT_HEIGHT); 
+		this.moveUp = true;
 		this.moveDown = false;
 		this.moveRight = false;
 		this.moveLeft = false;
-		this.hitBox = 22;
 
+
+	}
+
+	@Override
+	public void move(int width, int height, int borderLimit) {
+		// TODO Auto-generated method stub
+//		
+		if (this.y > borderLimit && this.moveUp == true) { // starts here
+			if (this.y <= borderLimit) {
+				this.moveUp = false;
+				this.moveDown = true;
+			}
+			this.y -= this.speed;
+		}
+	
+		
+//		if (this.y < height - borderLimit) {
+//			this.y += this.speed;	
+//		}
+
+		
+		
+//			if (direction == 1 && this.y > borderLimit) { // move up
+//						this.y -= this.speed;
+//			}
+//			if (direction == 2 && this.x < width - borderLimit) { // move right
+//				while (this.x  < borderLimit)
+//					this.x += this.speed;
+//			}
+//			if (direction == 3 && this.y < height - borderLimit) { // move down
+//					this.y += this.speed;
+//			}
+//			if (direction == 4 && this.x > (width / 2)) { // move left
+//					this.x -= this.speed;
+//			}
+		
 	}
 
 }
