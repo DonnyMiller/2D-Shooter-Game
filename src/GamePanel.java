@@ -77,13 +77,14 @@ public class GamePanel extends JPanel implements ActionListener{
 			r = new Random();
 
 			if (e[i] == null) {
-				int x = SCREEN_WIDTH - BORDER_LIMIT;
+				//int x = SCREEN_WIDTH - BORDER_LIMIT;
+				int x = r.nextInt((SCREEN_WIDTH - BORDER_LIMIT) - (SCREEN_WIDTH / 2)) + (SCREEN_WIDTH / 2);
 				int y = r.nextInt((SCREEN_HEIGHT - BORDER_LIMIT) - BORDER_LIMIT) + BORDER_LIMIT;
-				for (int j = 0; i < e.length; i++) {
-					if (e[j] != null && x != e[j].x && y != e[j].y) {
+			//	for (int j = 0; i < e.length; i++) {
+				//	if (e[j] != null && x != e[j].x && y != e[j].y) {
 						e[i] = new Grunt(x, y);
-					}
-				}
+				//	}
+			//	}
 				// TODO randomize the enemy class!
 			}
 		}
@@ -137,7 +138,6 @@ public class GamePanel extends JPanel implements ActionListener{
 			// grunt
 			for (int i = 0; i < e.length; i++) {
 				if (e[i] != null) {
-					System.out.println(e[i].speed);
 					g.setColor(Color.white);
 					g.fillRect(e[i].x, e[i].y, e[i].width, e[i].height); 
 				}
@@ -162,8 +162,6 @@ public class GamePanel extends JPanel implements ActionListener{
 		for (int i = 0; i < e.length; i++) {
 			if (e[i] != null) {
 				e[i].move(SCREEN_WIDTH, SCREEN_HEIGHT, BORDER_LIMIT); 
-				// works because of polymorphism
-//				e[i].y += e[i].speed;
 			}
 		}
 	}

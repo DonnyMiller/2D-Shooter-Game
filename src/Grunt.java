@@ -2,7 +2,7 @@ import java.util.Random;
 
 public class Grunt extends Enemies {
 	Random r;
-	static final int GRUNT_SPEED = 1;
+	static final int GRUNT_SPEED = 3;
 	static final int GRUNT_WIDTH = 20;
 	static final int GRUNT_HEIGHT = 20;
 
@@ -21,11 +21,19 @@ public class Grunt extends Enemies {
 		// TODO Auto-generated method stub
 //		
 		if (this.y > borderLimit && this.moveUp == true) { // starts here
-			if (this.y <= borderLimit) {
+			if (this.y - this.speed <= borderLimit) {
 				this.moveUp = false;
 				this.moveDown = true;
 			}
 			this.y -= this.speed;
+		}
+		
+		if (this.y < height - borderLimit && this.moveDown == true) { // starts here
+			if (this.y + this.speed >= height - borderLimit) {
+				this.moveUp = true;
+				this.moveDown = false;
+			}
+			this.y += this.speed;
 		}
 	
 		
