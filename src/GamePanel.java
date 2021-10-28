@@ -26,6 +26,7 @@ public class GamePanel extends JPanel implements ActionListener {
 	static final int BORDER_LIMIT = 50;
 	static final int NUMBER_OF_BULLETS = 10000;
 	static final int MAX_NUMBER_OF_ENEMIES = 5;
+
 	
 	boolean once = true; // workaround so client can't hold down fire to spam bullets
 	boolean running;
@@ -34,10 +35,10 @@ public class GamePanel extends JPanel implements ActionListener {
 	Player p; // the player
 	Random r;
 
-	Enemies[] e = new Enemies[MAX_NUMBER_OF_ENEMIES]; // can hold any type of enemy 
-	Bullet[] b = new Bullet[NUMBER_OF_BULLETS]; // holds ALL bullet entities
-	int level = 1;
-	int score = 0;
+	Enemies[] e; // can hold any type of enemy 
+	Bullet[] b; // holds ALL bullet entities
+	int level;
+	int score;
 	
 		
 	
@@ -45,6 +46,11 @@ public class GamePanel extends JPanel implements ActionListener {
 		this.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));
 		this.setFocusable(true); // can gain focus from keyboards
 		this.addKeyListener(new MyKeyAdapter()); // program can get keyboard inputs
+		
+		timer = new Timer(DELAY, this);
+		timer.start(); // hopefully this will make the game run at 'DELAY' speed
+		
+
 		
 		try {
 			bgImage = ImageIO.read(new File("pictures/background.png"));
@@ -57,8 +63,12 @@ public class GamePanel extends JPanel implements ActionListener {
 	public void startGame() {
 		this.running = true;
 		this.gameOver = false;
-		timer = new Timer(DELAY, this);
-		timer.start(); // hopefully this will make the game run at 'DELAY' speed
+		
+		this.e = new Enemies[MAX_NUMBER_OF_ENEMIES];
+		this.b = new Bullet[NUMBER_OF_BULLETS];
+		this.score = 0;
+		this.level = 1;
+	
 		this.spawnPlayer();
 		this.Level1();
 	}
@@ -206,16 +216,32 @@ public class GamePanel extends JPanel implements ActionListener {
 		// player bullet hits enemy
 		for (int i = 0; i < b.length; i++) {
 			for (int j = 0; j < e.length; j++) {
-				if ((b[i] != null && e[j] != null)) {
-					Rectangle playerBullet = new Rectangle(b[i].x, b[i].y, b[i].width, b[i].height);
+				if ((b[i] != null && e[j] != null) && this.running == true) {
+					Rectangle bullet = new Rectangle(b[i].x, b[i].y, b[i].width, b[i].height);
 					Rectangle enemy = new Rectangle(e[j].x, e[j].y, e[j].width, e[j].height);
+					Rectangle player = new Rectangle(p.x, p.y, p.width, p.height);
 					
-					if (playerBullet.intersects(enemy) && b[i].speed > 0) { 
+					// player bullet hit enemy
+					if (bullet.intersects(enemy) && b[i].speed > 0) { 
 						// only player bullets have > 0 bullet speed
+						// so that enemies can't shoot eachother
 						score += e[j].score;
 						e[j] = null;
 						b[i] = null; 
 					}
+					
+
+					// enemy bullet hit player
+					if (bullet.intersects(player) && b[i].speed < 0 && System.currentTimeMillis() - p.lastHit > 400) { 
+						p.lastHit = System.currentTimeMillis(); // so one bullet doesn't take 3 hits
+						this.running = false;
+
+						p = null;
+//						e[j] = null;
+//						b[i] = null; 
+						
+					}
+					
 				}
 			}
 		}
@@ -223,6 +249,7 @@ public class GamePanel extends JPanel implements ActionListener {
 	}
 	
 	public void gameOver(Graphics g) {
+
 		 
 	}
 

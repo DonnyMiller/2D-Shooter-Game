@@ -20,6 +20,8 @@ public class Player extends Entity {
 	boolean moveDown;
 	boolean fire;
 	long lastPress = 0; 
+	long lastHit = 0;
+
 
 
 	

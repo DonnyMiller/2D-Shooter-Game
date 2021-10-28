@@ -73,7 +73,6 @@ public class Grunt extends Enemies {
 				}
 			}
 		}
-		System.out.println("test");
 		return b;
 		
 	}
