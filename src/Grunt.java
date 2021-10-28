@@ -1,17 +1,29 @@
+import java.io.File;
+import java.io.IOException;
 import java.util.Random;
 
-public class Grunt extends Enemies {
-	Random r;
-	static final int GRUNT_SPEED = 3;
-	static final int GRUNT_WIDTH = 20;
-	static final int GRUNT_HEIGHT = 20;
+import javax.imageio.ImageIO;
 
-	Grunt(int x, int y) {
-		super(x, y, GRUNT_SPEED, GRUNT_WIDTH, GRUNT_HEIGHT); 
+public class Grunt extends Enemies {
+	static Random r = new Random();
+	static final int GRUNT_SPEED = 3;
+	static final int GRUNT_WIDTH = 30;
+	static final int GRUNT_HEIGHT = 30;
+	
+
+	Grunt(int width, int height, int borderLimit) {
+		super(r.nextInt((width - borderLimit) - (width / 2)) + (width / 2), r.nextInt((height - borderLimit) - borderLimit) + borderLimit, GRUNT_SPEED, GRUNT_WIDTH, GRUNT_HEIGHT); 
 		this.moveUp = true;
 		this.moveDown = false;
 		this.moveRight = false;
 		this.moveLeft = false;
+		
+		try {
+			image = ImageIO.read(new File("pictures/ufo.png"));
+		} 
+		catch (IOException e1) {
+			e1.printStackTrace();
+		}
 
 
 	}
@@ -35,28 +47,8 @@ public class Grunt extends Enemies {
 			}
 			this.y += this.speed;
 		}
-	
-		
-//		if (this.y < height - borderLimit) {
-//			this.y += this.speed;	
-//		}
-
-		
-		
-//			if (direction == 1 && this.y > borderLimit) { // move up
-//						this.y -= this.speed;
-//			}
-//			if (direction == 2 && this.x < width - borderLimit) { // move right
-//				while (this.x  < borderLimit)
-//					this.x += this.speed;
-//			}
-//			if (direction == 3 && this.y < height - borderLimit) { // move down
-//					this.y += this.speed;
-//			}
-//			if (direction == 4 && this.x > (width / 2)) { // move left
-//					this.x -= this.speed;
-//			}
-		
 	}
-
 }
+
+
+		

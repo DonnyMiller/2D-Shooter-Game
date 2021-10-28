@@ -18,11 +18,11 @@ import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
-public class GamePanel extends JPanel implements ActionListener{
-	
-	static final int SCREEN_WIDTH = 800; // width dimension of program
-	static final int SCREEN_HEIGHT = 450; // height dimension of program
-	static final int DELAY = 10; // speed of program
+public class GamePanel extends JPanel implements ActionListener {
+	BufferedImage playerImage = null;
+	static final int SCREEN_WIDTH = 1000; // width dimension of program
+	static final int SCREEN_HEIGHT = 600; // height dimension of program
+	static final int DELAY = 5; // speed of program
 	static final int BORDER_LIMIT = 50;
 	static final int NUMBER_OF_BULLETS = 10;
 	static final int MAX_NUMBER_OF_ENEMIES = 5;
@@ -35,8 +35,10 @@ public class GamePanel extends JPanel implements ActionListener{
 	Random r;
 
 	Enemies[] e = new Enemies[MAX_NUMBER_OF_ENEMIES]; // can hold any type of enemy 
-										
-				
+	Bullet[] b = new Bullet[NUMBER_OF_BULLETS]; // holds ALL bullet entities
+
+	
+		
 	
 	GamePanel() {
 		this.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));
@@ -46,20 +48,22 @@ public class GamePanel extends JPanel implements ActionListener{
 	}
 	
 	public void startGame() {
+
+		
 		this.running = true;
 		timer = new Timer(DELAY, this);
 		timer.start(); // hopefully this will make the game run at 'DELAY' speed
 		this.spawnPlayer();
-		this.spawnEnemies();
+		this.Level1();
 	}
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		if (this.running == true) {
-			this.movePlayer();
+			this.p.move(SCREEN_HEIGHT, BORDER_LIMIT);
 			this.moveEnemies();
-			this.p.fire();
+			b = this.p.fire(b);
 			this.moveBullets();
 			this.checkCollisions();
 			this.repaint();
@@ -68,26 +72,16 @@ public class GamePanel extends JPanel implements ActionListener{
 	}
 	
 	public void spawnPlayer() {
-		p = new Player(50, SCREEN_HEIGHT / 2); // spawn the player entity
+		// creates player instance
+		p = new Player(SCREEN_HEIGHT, BORDER_LIMIT); // spawn the player entity
 	}
 	
-	public void spawnEnemies() {
-		// adds enemies in Entity[] array
-		for (int i = 0; i < e.length; i++) {
-			r = new Random();
-
-			if (e[i] == null) {
-				//int x = SCREEN_WIDTH - BORDER_LIMIT;
-				int x = r.nextInt((SCREEN_WIDTH - BORDER_LIMIT) - (SCREEN_WIDTH / 2)) + (SCREEN_WIDTH / 2);
-				int y = r.nextInt((SCREEN_HEIGHT - BORDER_LIMIT) - BORDER_LIMIT) + BORDER_LIMIT;
-			//	for (int j = 0; i < e.length; i++) {
-				//	if (e[j] != null && x != e[j].x && y != e[j].y) {
-						e[i] = new Grunt(x, y);
-				//	}
-			//	}
-				// TODO randomize the enemy class!
-			}
+	public void Level1() {
+		final int AMOUNT = 5;
+		for (int i = 0; i < AMOUNT; i++) {
+			e[i] = new Grunt(SCREEN_WIDTH, SCREEN_HEIGHT, BORDER_LIMIT);
 		}
+
 	}
 	
 	
@@ -101,7 +95,7 @@ public class GamePanel extends JPanel implements ActionListener{
 			g.setColor(Color.red);
 			g.setFont(new Font("Ink Free", Font.BOLD, 14));
 	        FontMetrics metr = this.getFontMetrics(introFont);
-			g.drawString(introMessage, (SCREEN_WIDTH / 2) - 100, 20);
+			g.drawString(introMessage, ((SCREEN_WIDTH / 2) - 100), 20);
 
 
 
@@ -112,34 +106,26 @@ public class GamePanel extends JPanel implements ActionListener{
 		// in game
 		if (this.running == true) {
 			
-			BufferedImage playerImage = null;
-			
-	        try {
-				playerImage = ImageIO.read(new File("player.png"));
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-
-			
+		
+		
+	        
 			
 			// player
-			g.drawImage(playerImage, p.x, p.y, p.width, p.height, this);
+			g.drawImage(p.image, p.x, p.y, p.width, p.height, this);
 
 			
-			// player bullets
-			for (int i = 0; i < p.b.length; i++) {
-				if (p.b[i] != null) {
+			//  bullets
+			for (int i = 0; i < b.length; i++) {
+				if (b[i] != null) {
 					g.setColor(Color.white);
-					g.fillOval(p.b[i].x, p.b[i].y, p.b[i].width, p.b[i].height); 
+					g.fillOval(b[i].x, b[i].y, b[i].width, b[i].height); 
 				}
 			}
 			
-			// grunt
+			// enemies
 			for (int i = 0; i < e.length; i++) {
 				if (e[i] != null) {
-					g.setColor(Color.white);
-					g.fillRect(e[i].x, e[i].y, e[i].width, e[i].height); 
+					g.drawImage(e[i].image, e[i].x, e[i].y, e[i].width, e[i].height, this);
 				}
 			}
 			
@@ -148,15 +134,6 @@ public class GamePanel extends JPanel implements ActionListener{
 	
 	}
 	
-	
-	public void movePlayer() {
-		if (p.moveUp == true && p.y > BORDER_LIMIT) { // checks upper border
-			p.y -= p.speed;
-		}
-		if (p.moveDown == true && p.y < SCREEN_HEIGHT - BORDER_LIMIT) { // checks lower border
-			p.y += p.speed;
-		}
-	}
 	
 	public void moveEnemies() {
 		for (int i = 0; i < e.length; i++) {
@@ -167,31 +144,32 @@ public class GamePanel extends JPanel implements ActionListener{
 	}
 	
 	public void moveBullets() {
-		for (int i = 0; i < p.b.length; i++) {
-			if (p.b[i] != null) {
-				p.b[i].x += p.b[i].speed;
+		for (int i = 0; i < b.length; i++) {
+			if (b[i] != null) {
+				b[i].x += b[i].speed;
 			}
 		}
 	}
 	
 	public void checkCollisions() {
+		
 		// player bullet hits the border
-		for (int i = 0; i < p.b.length; i++) {
-			if (p.b[i] != null && p.b[i].x > SCREEN_WIDTH) {
-				p.b[i] = null;
+		for (int i = 0; i < b.length; i++) {
+			if (b[i] != null && b[i].x > SCREEN_WIDTH) {
+				b[i] = null;
 			}
 		}
 		
 		// player bullet hits enemy
-		for (int i = 0; i < p.b.length; i++) {
+		for (int i = 0; i < b.length; i++) {
 			for (int j = 0; j < e.length; j++) {
-				if ((p.b[i] != null && e[j] != null)) {
-					Rectangle playerBullet = new Rectangle(p.b[i].x, p.b[i].y, p.b[i].width, p.b[i].height);
+				if ((b[i] != null && e[j] != null)) {
+					Rectangle playerBullet = new Rectangle(b[i].x, b[i].y, b[i].width, b[i].height);
 					Rectangle enemy = new Rectangle(e[j].x, e[j].y, e[j].width, e[j].height);
 					
 					if (playerBullet.intersects(enemy)) {
 						e[j] = null;
-						p.b[i] = null; 
+						b[i] = null; 
 					}
 				}
 			}

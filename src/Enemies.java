@@ -1,5 +1,7 @@
+import java.awt.image.BufferedImage;
 
 public abstract class Enemies extends Entity {
+	BufferedImage image = null;
 	boolean moveUp;
 	boolean moveDown;
 	boolean moveRight;
@@ -10,5 +12,10 @@ public abstract class Enemies extends Entity {
 	}
 	
 	public abstract void move(int width, int height, int borderLimit);
+	
+	//public abstract void fire(int width, int height, int borderLimit);
+
+	
+
 
 }
