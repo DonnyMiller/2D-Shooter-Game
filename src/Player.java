@@ -1,4 +1,3 @@
-import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -18,9 +17,11 @@ public class Player extends Entity {
 	
 	boolean moveUp;
 	boolean moveDown;
+	boolean isAlive;
 	boolean fire;
 	long lastPress = 0; 
-	long lastHit = 0;
+	int lives;
+	
 
 
 
@@ -30,6 +31,8 @@ public class Player extends Entity {
 		this.moveUp = false;
 		this.moveDown = false;
 		this.fire = false;
+		this.lives = 3;
+		this.isAlive = true;
 		
 		try {
 			image = ImageIO.read(new File("pictures/player.png"));
@@ -61,9 +64,23 @@ public class Player extends Entity {
 		if (this.moveDown == true && this.y < height - borderLimit) { // checks lower border
 			this.y += this.speed;
 		}
-		
-		
 	}
+	
+	public void decrementLives() {
+		this.lives -= 1;
+	}
+	
+	public boolean isAlive() {
+		if (this.lives > 0) {
+			this.isAlive = true;
+		}
+		else {
+			this.isAlive = false;
+		}
+		return this.isAlive;
+	}
+	
+
 	
 
 

@@ -67,8 +67,7 @@ public class GamePanel extends JPanel implements ActionListener {
 		this.e = new Enemies[MAX_NUMBER_OF_ENEMIES];
 		this.b = new Bullet[NUMBER_OF_BULLETS];
 		this.score = 0;
-		this.level = 1;
-	
+		this.level = 1;	
 		this.spawnPlayer();
 		this.Level1();
 	}
@@ -84,6 +83,8 @@ public class GamePanel extends JPanel implements ActionListener {
 			b = this.p.fire(b);
 			this.moveBullets();
 			this.checkCollisions();
+			this.isGameOver();
+
 			this.repaint();
 		}
 
@@ -141,19 +142,23 @@ public class GamePanel extends JPanel implements ActionListener {
 		// in game
 		if (this.running == true) {
 			// level
-			String l = "Level: " + level;
+			String l = "Level: " + this.level;
 			g.setColor(Color.yellow);
 			g.setFont(new Font("Unispace", Font.BOLD, 20));
 			FontMetrics metricsLVL = getFontMetrics(g.getFont());
 			g.drawString(l, (SCREEN_WIDTH - metricsLVL.stringWidth(l)) / 2, 30);
 			
 			// score
-			String s = "Score: " + score;
+			String s = "Score: " + this.score;
 			g.setColor(Color.yellow);
 			g.setFont(new Font("Unispace", Font.BOLD, 20));
 			g.drawString(s, 20, 30);
 			
-
+			// lives
+			String lives = "Lives: " + p.lives;
+			g.setColor(Color.yellow);
+			g.setFont(new Font("Unispace", Font.BOLD, 20));
+			g.drawString(lives, SCREEN_WIDTH - 110, 30);
 	
 			// player
 			g.drawImage(p.image, p.x, p.y, p.width, p.height, this);
@@ -175,6 +180,24 @@ public class GamePanel extends JPanel implements ActionListener {
 			}
 			
 		}
+		
+		if (this.gameOver == true) { 
+			// game over message
+			String gameOver = "Game Over";
+			g.setColor(Color.red);
+			g.setFont(new Font("Unispace", Font.BOLD, 50));
+			FontMetrics metricsGO = getFontMetrics(g.getFont());
+			g.drawString(gameOver, (SCREEN_WIDTH - metricsGO.stringWidth(gameOver)) / 2, SCREEN_HEIGHT / 2);
+			
+			
+			// play again message
+			String playAgain = "Press Space to Play Again";
+			g.setColor(Color.white);
+			g.setFont(new Font("Unispace", Font.BOLD, 15));
+			FontMetrics metricsPA = getFontMetrics(g.getFont());
+			g.drawString(playAgain, (SCREEN_WIDTH - metricsPA.stringWidth(playAgain)) / 2, SCREEN_HEIGHT - 30);
+		}
+
 		
 	
 	}
@@ -232,14 +255,10 @@ public class GamePanel extends JPanel implements ActionListener {
 					
 
 					// enemy bullet hit player
-					if (bullet.intersects(player) && b[i].speed < 0 && System.currentTimeMillis() - p.lastHit > 400) { 
-						p.lastHit = System.currentTimeMillis(); // so one bullet doesn't take 3 hits
-						this.running = false;
-
-						p = null;
-//						e[j] = null;
-//						b[i] = null; 
-						
+					if (bullet.intersects(player) && b[i].speed < 0 ) { 
+						//p.lastHit = System.currentTimeMillis(); // so one bullet doesn't take 3 hits
+						b[i] = null; 
+						p.decrementLives();
 					}
 					
 				}
@@ -248,9 +267,12 @@ public class GamePanel extends JPanel implements ActionListener {
 		
 	}
 	
-	public void gameOver(Graphics g) {
-
-		 
+	public void isGameOver() {
+		this.gameOver = !(p.isAlive());
+		
+		if (this.gameOver == true) {
+			this.running = false;
+		}
 	}
 
 
