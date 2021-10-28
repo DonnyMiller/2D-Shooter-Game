@@ -19,12 +19,12 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 
 public class GamePanel extends JPanel implements ActionListener {
-	BufferedImage playerImage = null;
+	BufferedImage bgImage = null;
 	static final int SCREEN_WIDTH = 1000; // width dimension of program
 	static final int SCREEN_HEIGHT = 600; // height dimension of program
 	static final int DELAY = 5; // speed of program
 	static final int BORDER_LIMIT = 50;
-	static final int NUMBER_OF_BULLETS = 10;
+	static final int NUMBER_OF_BULLETS = 10000;
 	static final int MAX_NUMBER_OF_ENEMIES = 5;
 	
 	boolean once = true; // workaround so client can't hold down fire to spam bullets
@@ -36,33 +36,41 @@ public class GamePanel extends JPanel implements ActionListener {
 
 	Enemies[] e = new Enemies[MAX_NUMBER_OF_ENEMIES]; // can hold any type of enemy 
 	Bullet[] b = new Bullet[NUMBER_OF_BULLETS]; // holds ALL bullet entities
-
+	int level = 1;
+	int score = 0;
 	
 		
 	
 	GamePanel() {
 		this.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));
-		this.setBackground(Color.black);
 		this.setFocusable(true); // can gain focus from keyboards
 		this.addKeyListener(new MyKeyAdapter()); // program can get keyboard inputs
+		
+		try {
+			bgImage = ImageIO.read(new File("pictures/background.png"));
+		} 
+		catch (IOException e1) {
+			e1.printStackTrace();
+		}
 	}
 	
 	public void startGame() {
-
-		
 		this.running = true;
+		this.gameOver = false;
 		timer = new Timer(DELAY, this);
 		timer.start(); // hopefully this will make the game run at 'DELAY' speed
 		this.spawnPlayer();
 		this.Level1();
 	}
-	
+	 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
+		
 		if (this.running == true) {
 			this.p.move(SCREEN_HEIGHT, BORDER_LIMIT);
 			this.moveEnemies();
+			this.fireEnemies();
 			b = this.p.fire(b);
 			this.moveBullets();
 			this.checkCollisions();
@@ -86,30 +94,57 @@ public class GamePanel extends JPanel implements ActionListener {
 	
 	
 	public void paint(Graphics g) {
-		super.paintComponent(g);
+		super.paintComponent(g);	
+		g.drawImage(bgImage, 0, 0, null);
+
+
 		
 		// intro
 		if (this.running == false && this.gameOver == false) {
-			String introMessage = "Donny's 2D Shooter Game";
-			Font introFont = new Font("Helvetica", Font.BOLD, 14);
+			String introMessage = "2D Unispace";
 			g.setColor(Color.red);
-			g.setFont(new Font("Ink Free", Font.BOLD, 14));
-	        FontMetrics metr = this.getFontMetrics(introFont);
-			g.drawString(introMessage, ((SCREEN_WIDTH / 2) - 100), 20);
-
-
-
-			String instructions = "Press space to start (w,a,s,d to move and spacebar to fire!)";
-
+			g.setFont(new Font("Unispace", Font.BOLD, 50));
+			FontMetrics metricsIM = getFontMetrics(g.getFont());
+			g.drawString(introMessage, ((SCREEN_WIDTH - metricsIM.stringWidth(introMessage)) / 2), SCREEN_HEIGHT / 2);
+			
+			String byDonny = "by donny miller";
+			g.setColor(Color.white);
+			g.setFont(new Font("Unispace", Font.BOLD, 20));
+			FontMetrics metricsBDM = getFontMetrics(g.getFont());
+			g.drawString(byDonny, ((SCREEN_WIDTH - metricsBDM.stringWidth(byDonny)) / 2), (SCREEN_HEIGHT / 2) + 30);
+			
+			
+			String instructions = "up = w / down = s / space = fire";
+			g.setColor(Color.white);
+			g.setFont(new Font("Unispace", Font.BOLD, 20));
+			FontMetrics metricsINST = getFontMetrics(g.getFont());
+			g.drawString(instructions, ((SCREEN_WIDTH - metricsINST.stringWidth(instructions)) / 2), SCREEN_HEIGHT - 110);
+			
+			String toStart = "Press space to start";
+			g.setColor(Color.white);
+			g.setFont(new Font("Unispace", Font.BOLD, 20));
+			FontMetrics metricsSTRT = getFontMetrics(g.getFont());
+			g.drawString(toStart, ((SCREEN_WIDTH - metricsSTRT.stringWidth(toStart)) / 2), SCREEN_HEIGHT - 20);
 		}
+
 		
 		// in game
 		if (this.running == true) {
+			// level
+			String l = "Level: " + level;
+			g.setColor(Color.yellow);
+			g.setFont(new Font("Unispace", Font.BOLD, 20));
+			FontMetrics metricsLVL = getFontMetrics(g.getFont());
+			g.drawString(l, (SCREEN_WIDTH - metricsLVL.stringWidth(l)) / 2, 30);
 			
-		
-		
-	        
+			// score
+			String s = "Score: " + score;
+			g.setColor(Color.yellow);
+			g.setFont(new Font("Unispace", Font.BOLD, 20));
+			g.drawString(s, 20, 30);
 			
+
+	
 			// player
 			g.drawImage(p.image, p.x, p.y, p.width, p.height, this);
 
@@ -143,6 +178,14 @@ public class GamePanel extends JPanel implements ActionListener {
 		}
 	}
 	
+	public void fireEnemies() {
+		for (int i = 0; i < e.length; i++) {
+			if (e[i] != null) {
+				e[i].fire(b); 
+			}
+		}
+	}
+	
 	public void moveBullets() {
 		for (int i = 0; i < b.length; i++) {
 			if (b[i] != null) {
@@ -167,7 +210,9 @@ public class GamePanel extends JPanel implements ActionListener {
 					Rectangle playerBullet = new Rectangle(b[i].x, b[i].y, b[i].width, b[i].height);
 					Rectangle enemy = new Rectangle(e[j].x, e[j].y, e[j].width, e[j].height);
 					
-					if (playerBullet.intersects(enemy)) {
+					if (playerBullet.intersects(enemy) && b[i].speed > 0) { 
+						// only player bullets have > 0 bullet speed
+						score += e[j].score;
 						e[j] = null;
 						b[i] = null; 
 					}

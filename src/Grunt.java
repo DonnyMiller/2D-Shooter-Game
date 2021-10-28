@@ -5,18 +5,31 @@ import java.util.Random;
 import javax.imageio.ImageIO;
 
 public class Grunt extends Enemies {
+	static final int SHOT_DELAY = 250; 
+
 	static Random r = new Random();
 	static final int GRUNT_SPEED = 3;
 	static final int GRUNT_WIDTH = 30;
 	static final int GRUNT_HEIGHT = 30;
+	long lastPress = 0;
 	
 
 	Grunt(int width, int height, int borderLimit) {
 		super(r.nextInt((width - borderLimit) - (width / 2)) + (width / 2), r.nextInt((height - borderLimit) - borderLimit) + borderLimit, GRUNT_SPEED, GRUNT_WIDTH, GRUNT_HEIGHT); 
-		this.moveUp = true;
-		this.moveDown = false;
-		this.moveRight = false;
-		this.moveLeft = false;
+		if ((r.nextInt(2) + 1) == 1) {
+			this.moveUp = true;
+			this.moveDown = false;
+			this.moveRight = false;
+			this.moveLeft = false;
+		}
+		else {
+			this.moveDown = true;
+			this.moveUp = false;
+			this.moveRight = false;
+			this.moveLeft = false;
+		}
+		this.fire = false;
+		this.score = 10;
 		
 		try {
 			image = ImageIO.read(new File("pictures/ufo.png"));
@@ -47,6 +60,22 @@ public class Grunt extends Enemies {
 			}
 			this.y += this.speed;
 		}
+	}
+
+	@Override
+	public Bullet[] fire(Bullet[] b) {
+		// TODO Auto-generated method stub
+		if ((r.nextInt(200) + 1) == 3 ) {
+			for (int i = 0; i < b.length; i++) {
+				if (b[i] == null && System.currentTimeMillis() - lastPress > SHOT_DELAY) {
+					b[i] = new Bullet(x - 10, y + 6, -10, 10, 10);
+					lastPress = System.currentTimeMillis();
+				}
+			}
+		}
+		System.out.println("test");
+		return b;
+		
 	}
 }
 

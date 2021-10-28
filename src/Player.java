@@ -1,3 +1,4 @@
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -43,7 +44,7 @@ public class Player extends Entity {
 		if (fire == true) {
 			for (int i = 0; i < b.length; i++) {
 				if (b[i] == null && System.currentTimeMillis() - lastPress > SHOT_DELAY) {
-					b[i] = new Bullet(x + 20, y + 6, BULLET_SPEED, PLAYER_BULLET_WIDTH , PLAYER_BULLET_HEIGHT);
+					b[i] = new Bullet(x + 10, y + 11, BULLET_SPEED, PLAYER_BULLET_WIDTH , PLAYER_BULLET_HEIGHT);
 					lastPress = System.currentTimeMillis();
 				}
 			}
