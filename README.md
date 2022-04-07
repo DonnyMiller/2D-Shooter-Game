@@ -1,4 +1,4 @@
-# 2D-Shooter-Game]
+# 2D-Shooter-Game
 How to install the project and run it?
 As of right now the easiest way to run the game is to import the zip file as a project into Eclipse (or other Java compiler) and run the starter class.
 If you want to contribute you can also just download the zip and import into eclipse.
